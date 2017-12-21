@@ -38,7 +38,7 @@ namespace HutongGames.PlayMaker.Actions
 			_skeletonAnimation = go.GetComponent<SkeletonAnimation>();
 			_skeleton = _skeletonAnimation.Skeleton;
 			
-			if (go = null) 
+			if (go == null) 
 			{
 				Finish ();
 			}

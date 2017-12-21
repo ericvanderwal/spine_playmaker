@@ -42,7 +42,7 @@ namespace HutongGames.PlayMaker.Actions
 			var go = Fsm.GetOwnerDefaultTarget (gameObject);
 			_skeletonAnimation = go.GetComponent<SkeletonAnimation>();
 			
-			if (go = null) 
+			if (go == null) 
 			{
 				Finish ();
 			}
