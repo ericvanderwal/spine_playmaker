@@ -1,0 +1,8 @@
+{
+    "name": "Spine-Playmaker",
+    "references": [
+        "Spine-Unity"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": []
+}
