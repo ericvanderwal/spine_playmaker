@@ -6,51 +6,43 @@ using Spine.Unity.Modules;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory ("Spine Playmaker")]
-	[Tooltip ("Flip a spine animation along the X or Y axis.")]
+	[Tooltip ("Flip a spine animation along the X axis, based on a target.")]
 	public class SpineFlipAnimation : FsmStateAction
 	{
 		[RequiredField]
-		[CheckForComponent (typeof(SkeletonAnimation))]
+        [CheckForComponent (typeof(SkeletonGraphic))]
+        [CheckForComponent(typeof(RectTransform))]
 		[Tooltip ("The GameObject holding your animated character")]
 		public FsmOwnerDefault gameObject;
-		
-		[Tooltip ("Flip animation along the X axis")]
-		public FsmBool flipX;
-		
-		[Tooltip ("Flip animation along the Y axis")]
-		public FsmBool flipY;
+
+        [RequiredField]
+        [Tooltip("The target the character should be looking at")]
+        public FsmVector2 target;
 
 		// Spine
-		private SkeletonAnimation _skeletonAnimation;
-		private Spine.Skeleton _skeleton;
+        private SkeletonGraphic _skeletonGraphic;
 		private Spine.AnimationState state;
 		
 		public override void Reset ()
 		{
 			gameObject = null;
-			flipX = false;
-			flipY = false;
+            target = null;
 		}
 
 		public override void OnEnter ()
-		{
+        {
 			var go = Fsm.GetOwnerDefaultTarget (gameObject);
-			_skeletonAnimation = go.GetComponent<SkeletonAnimation>();
-			_skeleton = _skeletonAnimation.Skeleton;
+
+            if (go == null)
+            {
+                Finish();
+                return;
+            }
+
+            _skeletonGraphic = go.GetComponent<SkeletonGraphic>();
+            var rectTransform = go.GetComponent<RectTransform>();
 			
-			if (go = null) 
-			{
-				Finish ();
-			}
-			
-			if(flipX.Value)
-			{
-				_skeleton.FlipX = true;
-			}
-			if(flipY.Value)
-			{
-				_skeleton.FlipY = true;
-			}
+            _skeletonGraphic.Skeleton.FlipX = target.Value.x > rectTransform.anchoredPosition.x;
 			Finish();
 		}
 

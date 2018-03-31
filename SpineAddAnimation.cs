@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using Spine;
 using Spine.Unity;
-using Spine.Unity.Modules;
 
 namespace HutongGames.PlayMaker.Actions
 {
@@ -10,7 +9,7 @@ namespace HutongGames.PlayMaker.Actions
 	public class SpineAddAnimation : FsmStateAction
 	{
 		[RequiredField]
-		[CheckForComponent (typeof(SkeletonAnimation))]
+        [CheckForComponent (typeof(SkeletonGraphic))]
 		[Tooltip ("The GameObject holding your animated character")]
 		public FsmOwnerDefault gameObject;
 		
@@ -27,10 +26,14 @@ namespace HutongGames.PlayMaker.Actions
 		[RequiredField]
 		[Tooltip ("Seconds to begin this animation after the start of the previous animation. May be less than zero to use the animation duration of the previous track minus any mix duration plus the delay.")]
 		public FsmInt delay;
+
+        [RequiredField]
+        [Tooltip("Enable to immediately mark this as finished")]
+        public FsmBool finishImmediately;
 		
 		// Spine
 		private Spine.AnimationState state;
-		private SkeletonAnimation _skeletonAnimation;
+        private SkeletonGraphic _skeletonAnimation;
 
 		public override void Reset ()
 		{
@@ -44,17 +47,30 @@ namespace HutongGames.PlayMaker.Actions
 		public override void OnEnter ()
 		{
 			var go = Fsm.GetOwnerDefaultTarget (gameObject);
-			_skeletonAnimation = go.GetComponent<SkeletonAnimation>();
+            _skeletonAnimation = go.GetComponent<SkeletonGraphic>();
 			
-			if (go = null) 
+			if (go == null) 
 			{
 				Finish ();
 			}
 			
-			_skeletonAnimation.state.AddAnimation(trackIndex.Value, animationName.Value, loop.Value, delay.Value);
-			Finish();
+            _skeletonAnimation.AnimationState.AddAnimation(trackIndex.Value, animationName.Value, loop.Value, delay.Value);
 
+            if (finishImmediately.Value)
+            {
+                Finish();
+            }
+            else
+            {
+                _skeletonAnimation.AnimationState.Complete += DoFinish;
+            }
 		}
+
+        private void DoFinish(TrackEntry trackEntry)
+        {
+            _skeletonAnimation.AnimationState.Complete -= DoFinish;
+            Finish();
+        }
 
 	}
 }
